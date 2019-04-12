@@ -16,7 +16,7 @@ apply plugin: 'io.spring.dependency-management'
 bootJar {
     baseName = 'gs-serving-web-content'
     version =  '0.1.0'
-    mainClassName = 'hello.Application'
+    mainClassName = 'primesearcher.Application'
 }
 
 repositories {

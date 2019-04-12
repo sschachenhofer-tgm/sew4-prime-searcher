@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head>
+    <title>Prime Searcher</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<style>
+		body {
+			font-family: sans-serif;
+			text-align: center;
+		}
+		
+		#container {
+			width: 80%;
+			margin: auto;
+		}
+
+        .rect {
+            height: 20px;
+            background-color: blue;
+        }
+		
+		#last-prime {
+			font-size: 3em;
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+    <div id="container">
+        <div class="rect"></div>
+
+        <p>Started at <span th:text="${startup}"></span></p>
+        <p>The last prime discovered was <span id="last-prime" th:text="${latestPrime}"></span> at <span th:text="${latestPrimeDiscovered}"></span></p>
+
+        <div class="rect"></div>
+
+        <p>All primes discovered so far:</p>
+        <p th:text="${allprimes}"></p>
+
+        <div class="rect"></div>
+    </div>
+</body>
+</html>

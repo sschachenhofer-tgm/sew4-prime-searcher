@@ -1,35 +1,41 @@
 package primesearcher;
 
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalTime;
+import javax.servlet.annotation.WebServlet;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-@Component
-public class PrimeCalculator implements ApplicationRunner {
+@WebServlet
+public class Searcher extends Thread {
 
     private ConcurrentSkipListSet<Long> primes;
     private boolean calculating; //Set this to false to stop the calculation
-    private LocalTime startup;
-    private LocalTime lastPrimeDiscovered;
+    private LocalDateTime startup;
+    private LocalDateTime lastPrimeDiscovered;
+
+    /*
+     * DateTimeFormatter zum richtigen Formatieren von Datum und Uhrzeit. Das Ausgabeformat ist:
+     * Fri Apr 12 15:29:04 CEST 2019
+     * (entsprechend der Angabe auf Github)
+     */
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEE LLL dd HH:mm:ss 'CEST' yyyy");
+
+    public Searcher() {
+        this.primes = new ConcurrentSkipListSet<>();
+        this.calculating = true;
+    }
 
     /**
      * Calculates primes until the method stop() is called. All calculated primes are added to a collection that can be
      * obtained through the method getPrimes().
      *
-     * @param args The application arguments (whatever that is...)
      * @author Simon Schachenhofer
      * @since 2019-04-11
      */
     @Override
-    public void run(ApplicationArguments args) {
-        this.startup = LocalTime.now();
-
-        this.primes = new ConcurrentSkipListSet<>();
+    public void run() {
+        this.startup = LocalDateTime.now();
 
         long current = 2; //Start calculating at 2, the first prime number
 
@@ -55,10 +61,19 @@ public class PrimeCalculator implements ApplicationRunner {
                 }
             }
 
-            //Add current number to the list if it is a prime
+            /*
+             * Add current number to the list if it is a prime and sleep for 1 second - this ensures the CPU is not used
+             * too heavily
+             */
             if (isPrime) {
                 this.primes.add(current);
-                this.lastPrimeDiscovered = LocalTime.now();
+                this.lastPrimeDiscovered = LocalDateTime.now();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    this.calculating = false;
+                }
             }
 
             current++;
@@ -124,11 +139,48 @@ public class PrimeCalculator implements ApplicationRunner {
 
     /**
      * Returns the startup time
+     *
+     * @return The LocalTime object representing the time where PrimeCalculator run() method was started
+     * @author Simon Schachenhofer
+     * @since 2019-04-12
      */
-    public LocalTime getStartupTime() {
+    public LocalDateTime getStartupTime() {
         return this.startup;
     }
 
+    /**
+     * Returns the startup time as a String
+     *
+     * @return A string, representing the time where PrimeCalculator run() method was started, in the following format:
+     *         Fri Apr 12 09:34:27 CEST 2019
+     * @author Simon Schachenhofer
+     * @since 2019-04-12
+     *
+     */
+    public String getStartupString() {
+        return this.startup.format(this.dtf);
+    }
 
-    //TODO: Methoden zum Abrufen der Zeitpunkte (startup und lastPrimeDiscovered
+    /**
+     * Returns the time when the last prime was discovered
+     *
+     * @return The LocalTime object representing the time where the last prime was discovered
+     * @author Simon Schachenhofer
+     * @since 2019-04-12
+     */
+    public LocalDateTime getLatestPrimeDiscoveredTime() {
+        return this.lastPrimeDiscovered;
+    }
+
+    /**
+     * Returns the time when the last prime was discovered as a String
+     *
+     * @return A String, representing the time where the last prime was discovered, in the following format:
+     *         Fri Apr 12 09:34:27 CEST 2019
+     * @author Simon Schachenhofer
+     * @since 2019-04-12
+     */
+    public String getLatestPrimeDiscoveredString() {
+        return this.lastPrimeDiscovered.format(this.dtf);
+    }
 }
