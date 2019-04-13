@@ -1,12 +1,13 @@
 package primesearcher;
 
-import javax.servlet.annotation.WebServlet;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-@WebServlet
+@Component
 public class Searcher extends Thread {
 
     private ConcurrentSkipListSet<Long> primes;
@@ -24,6 +25,9 @@ public class Searcher extends Thread {
     public Searcher() {
         this.primes = new ConcurrentSkipListSet<>();
         this.calculating = true;
+        this.startup = LocalDateTime.now();
+
+        this.start();
     }
 
     /**
@@ -51,10 +55,10 @@ public class Searcher extends Thread {
             /*
              * Inner loop to check whether the current number (l) is dividable by and other natural number (m) > 1 in
              * whole numbers.
-             * The loop starts at l = current - 1 (because a number is dividable by itself in whole numbers) and ends
-             * at 2.
+             * The loop starts at l = 2 (the lowest possible proper divisor > 1) and ends at current - 1 (the highest
+             * possible proper divisor).
              */
-            for (long l = current - 1; l > 1; l--) {
+            for (long l = 2; l < current; l++) {
                 if (current % l == 0) {
                     isPrime = false;
                     break;
