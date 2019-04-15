@@ -85,15 +85,6 @@ public class Searcher extends Thread {
     }
 
     /**
-     * Sets the private boolean parameter to false to stop the calculation of new primes and thereby end the thread.
-     * @author Simon Schachenhofer
-     * @since 2019-04-11
-     */
-    public void stopCalculation() {
-        this.calculating = false;
-    }
-
-    /**
      * Returns the set of calculated primes
      * @author Simon Schachenhofer
      * @since 2019-04-11
@@ -186,5 +177,25 @@ public class Searcher extends Thread {
      */
     public String getLatestPrimeDiscoveredString() {
         return this.lastPrimeDiscovered.format(this.dtf);
+    }
+
+    /**
+     * Sets the private boolean parameter to false to stop the calculation of new primes and thereby end the thread.
+     * @author Simon Schachenhofer
+     * @since 2019-04-11
+     */
+    public void stopCalculation() {
+        this.calculating = false;
+    }
+
+    /**
+     * Returns whether the prime searcher is still running and calculating more primes.
+     *
+     * @author Simon Schachenhofer
+     * @since 2019-04-15
+     * @return true if it is still running, false if it has been stopped.
+     */
+    public boolean isCalculating() {
+        return this.isAlive() && this.calculating;
     }
 }

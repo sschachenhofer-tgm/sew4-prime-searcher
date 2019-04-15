@@ -1,11 +1,11 @@
 package primesearcher;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,11 +23,7 @@ public class PrimeSearcherController {
     @RequestMapping("/searcher")
     public String getPrimes(Model model) {
 
-        model.addAttribute("startup", this.searcher.getStartupString());
-        model.addAttribute("latestPrime", this.searcher.getLatestPrime());
-        model.addAttribute("latestPrimeDiscovered", this.searcher.getLatestPrimeDiscoveredString());
-        model.addAttribute("allprimes", this.searcher.getPrimesString());
-
+        addAttributesToModel(model);
         return "searcher";
     }
 
@@ -36,6 +32,7 @@ public class PrimeSearcherController {
      */
     @RequestMapping({"", "/"})
     public void redirect(HttpServletRequest req, HttpServletResponse resp) {
+
         try {
             resp.sendRedirect("/primes/searcher");
         } catch (IOException e) {
@@ -43,9 +40,34 @@ public class PrimeSearcherController {
         }
     }
 
-    @Bean
-    public Searcher getSearcher() {
-        return new Searcher();
+    /**
+     * Stops the Searcher thread and redirects back to /primes/searcher.
+     */
+    @RequestMapping("/stop")
+    public void stopSearcher(HttpServletRequest req, HttpServletResponse resp) {
+
+        this.searcher.stopCalculation();
+
+        try {
+            resp.sendRedirect("/primes/searcher");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Private utility method to add the four data fields (startup time, latest discovered prime, time the latest prime
+     * was discovered, all primes discovered) to the model. Avoids duplicate code in the getPrimes() and stopSearcher()
+     * methods.
+     *
+     * @param m The model object the attributes should be added to.
+     */
+    private void addAttributesToModel(Model m) {
+
+        m.addAttribute("isRunning", this.searcher.isCalculating());
+        m.addAttribute("startup", this.searcher.getStartupString());
+        m.addAttribute("latestPrime", this.searcher.getLatestPrime());
+        m.addAttribute("latestPrimeDiscovered", this.searcher.getLatestPrimeDiscoveredString());
+        m.addAttribute("allprimes", this.searcher.getPrimesString());
+    }
 }

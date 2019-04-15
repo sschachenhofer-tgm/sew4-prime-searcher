@@ -27,6 +27,15 @@
 </head>
 <body>
     <div id="container">
+        <!-- Status information about the searcher -->
+        <p th:if="${isRunning}">
+            The searcher is currently <strong>running</strong>.
+        </p>
+        <p th:unless="${isRunning}">
+            The searcher has been <strong>stopped</strong>.<br>
+            This is the final result.
+        </p>
+
         <div class="rect"></div>
 
         <p>Started at <span th:text="${startup}"></span></p>
@@ -38,6 +47,8 @@
         <p th:text="${allprimes}"></p>
 
         <div class="rect"></div>
+
+        <p th:if="${isRunning}">To stop the prime searcher, click <a href="/primes/stop">here</a>.</p>
     </div>
 </body>
 </html>
