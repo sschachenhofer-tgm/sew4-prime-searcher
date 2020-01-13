@@ -12,6 +12,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
 
 bootJar {
     baseName = 'gs-serving-web-content'
@@ -31,4 +32,13 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
     compile("org.springframework.boot:spring-boot-devtools")
     testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+    }
 }
